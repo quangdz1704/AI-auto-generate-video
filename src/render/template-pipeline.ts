@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 import pLimit from "p-limit";
 import { TemplateScriptSchema, type TemplateScript } from "./template-script-schema.js";
 import { loadConfig } from "../config.js";
@@ -51,15 +51,30 @@ export async function runTemplatePipeline(scriptPath: string): Promise<void> {
   const sceneAudio = await Promise.all(
     script.scenes.map((scene) =>
       limit(async () => {
-        const out = join(voiceDir, `scene-${scene.id}.mp3`);
-        const srtOut = join(voiceDir, `scene-${scene.id}.srt`);
+        // The OpenAI-compatible OmniVoice endpoint returns WAV. It is encoded
+        // into the final MP3 once all scene tracks are concatenated in step 4.
+        const out = join(voiceDir, `scene-${scene.id}.wav`);
         if (existsSync(out)) {
           const dur = await getDurationSec(out);
-          log.info(`  scene ${scene.id}: REUSE mp3 (${dur.toFixed(2)}s)`);
+          log.info(`  scene ${scene.id}: REUSE wav (${dur.toFixed(2)}s)`);
           return { id: scene.id, path: out, durationSec: dur };
         }
         log.info(`  TTS scene ${scene.id} (${scene.voiceText.length} chars)...`);
-        await ttsClient.generate(scene.voiceText, out, srtOut);
+        await ttsClient.generate(scene.voiceText, out, {
+          mode: script.voice.mode,
+          instructions: script.voice.instructions,
+          voice: script.voice.voice,
+          speed: script.voice.speed,
+          numStep: script.voice.numStep,
+          positionTemperature: script.voice.positionTemperature,
+          classTemperature: script.voice.classTemperature,
+          referenceAudioPath: script.voice.referenceAudio
+            ? isAbsolute(script.voice.referenceAudio)
+              ? script.voice.referenceAudio
+              : resolve(outputDir, script.voice.referenceAudio)
+            : undefined,
+          referenceText: script.voice.referenceText,
+        });
         const dur = await getDurationSec(out);
         log.info(`  scene ${scene.id}: ${dur.toFixed(2)}s`);
         return { id: scene.id, path: out, durationSec: dur };

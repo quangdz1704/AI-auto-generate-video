@@ -151,7 +151,7 @@ Pipeline chạy 8 bước, lần nào cũng như lần nấy — code ở [`src/
 | --- | ------------------ | ------------------------------------------------------------- |
 | 1   | **Kiểm tra**       | `script.json` được validate theo schema Zod                   |
 | 2   | **Văn bản phụ đề** | `script.txt` — gộp toàn bộ `voiceText` (CapCut auto-caption)  |
-| 3   | **TTS / scene**    | `voice/scene-<id>.mp3` qua OmniVoice _(idempotent)_           |
+| 3   | **TTS / scene**    | `voice/scene-<id>.wav` qua OmniVoice _(idempotent)_           |
 | 4   | **Ghép giọng**     | `voice-raw.mp3` chèn 0.3s nghỉ + tính mốc thời gian mỗi scene |
 | 5   | **Trộn SFX**       | `voice.mp3` — chèn hiệu ứng âm thanh lên giọng đọc            |
 | 6   | **Render clip**    | `clips/scene-<id>-fit.mp4` — template → MP4, fit theo giọng   |
@@ -193,9 +193,12 @@ Pipeline chạy 8 bước, lần nào cũng như lần nấy — code ở [`src/
 ```env
 TTS_PROVIDER=omnivoice
 OMNIVOICE_ENDPOINT=http://127.0.0.1:8123
+TTS_CONCURRENCY=1
 ```
 
-Server chỉ cần nhận `POST /tts` kèm `{ text }` và trả về bytes `audio/mpeg` là đủ.
+Xem [hướng dẫn chạy OmniVoice và chọn/design/clone giọng](docs/omnivoice.md).
+Pipeline dùng API OpenAI-compatible `POST /v1/audio/speech`; server trả WAV cho
+từng scene, sau đó FFmpeg tạo `voice.mp3` cuối cùng.
 
 </details>
 
@@ -295,8 +298,8 @@ output/<slug>-<timestamp>/
 ├── script.json          # đầu vào (skill sinh hoặc viết tay)
 ├── script.txt           # gộp voiceText — cho CapCut auto-caption
 ├── voice/
-│   ├── scene-hook.mp3    # TTS từng scene (idempotent)
-│   └── scene-*.mp3
+│   ├── scene-hook.wav    # TTS từng scene (idempotent)
+│   └── scene-*.wav
 ├── voice-raw.mp3        # ghép giọng, chưa SFX (trung gian)
 ├── voice.mp3           # audio cuối, đã trộn SFX
 ├── clips/
@@ -306,7 +309,7 @@ output/<slug>-<timestamp>/
 └── video.mp4          # 🎉 thành phẩm — 1080×1920 + voice + SFX
 ```
 
-> **Chạy lại không sợ tốn công.** Muốn TTS lại scene nào thì xoá `voice/scene-<id>.mp3`, muốn
+> **Chạy lại không sợ tốn công.** Muốn TTS lại scene nào thì xoá `voice/scene-<id>.wav`, muốn
 > render lại scene nào thì xoá `clips/scene-<id>.mp4`, rồi chạy lại pipeline — phần còn lại được
 > giữ nguyên, không làm lại từ đầu.
 

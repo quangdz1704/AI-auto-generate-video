@@ -151,7 +151,7 @@ Eight deterministic steps in [`src/render/template-pipeline.ts`](src/render/temp
 | --- | ---------------- | ------------------------------------------------------------- |
 | 1   | **Validate**     | `script.json` checked against the Zod schema                  |
 | 2   | **Caption text** | `script.txt` — all `voiceText` joined (CapCut auto-caption)   |
-| 3   | **TTS / scene**  | `voice/scene-<id>.mp3` via OmniVoice _(idempotent)_           |
+| 3   | **TTS / scene**  | `voice/scene-<id>.wav` via OmniVoice _(idempotent)_           |
 | 4   | **Concat voice** | `voice-raw.mp3` with 0.3s gaps + per-scene start times        |
 | 5   | **SFX mix**      | `voice.mp3` — sound effects layered onto the narration        |
 | 6   | **Render clips** | `clips/scene-<id>-fit.mp4` — template → MP4, fit to narration |
@@ -193,9 +193,12 @@ OmniVoice is the only TTS provider, and it's local — **no API keys.**
 ```env
 TTS_PROVIDER=omnivoice
 OMNIVOICE_ENDPOINT=http://127.0.0.1:8123
+TTS_CONCURRENCY=1
 ```
 
-The server must accept `POST /tts` with `{ text }` and return `audio/mpeg` bytes.
+See the [local OmniVoice guide](docs/omnivoice.md) for server setup and voice
+design/cloning. The pipeline calls OpenAI-compatible `POST /v1/audio/speech`;
+scene audio is WAV and FFmpeg produces the final `voice.mp3`.
 
 </details>
 
@@ -296,8 +299,8 @@ output/<slug>-<timestamp>/
 ├── script.json          # input (skill-generated or hand-written)
 ├── script.txt           # all voiceText joined — CapCut auto-caption
 ├── voice/
-│   ├── scene-hook.mp3    # TTS per scene (idempotent)
-│   └── scene-*.mp3
+│   ├── scene-hook.wav    # TTS per scene (idempotent)
+│   └── scene-*.wav
 ├── voice-raw.mp3        # concatenated voices, no SFX (intermediate)
 ├── voice.mp3           # final audio with SFX mixed in
 ├── clips/
@@ -307,7 +310,7 @@ output/<slug>-<timestamp>/
 └── video.mp4          # 🎉 final — 1080×1920 + voice + SFX
 ```
 
-> **Idempotent.** Delete `voice/scene-<id>.mp3` to force re-TTS, or `clips/scene-<id>.mp4` to
+> **Idempotent.** Delete `voice/scene-<id>.wav` to force re-TTS, or `clips/scene-<id>.mp4` to
 > re-render just that scene, then re-run the pipeline.
 
 </details>

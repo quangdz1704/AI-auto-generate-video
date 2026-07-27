@@ -28,6 +28,34 @@ const TemplateScene = z.object({
 });
 export type TemplateSceneType = z.infer<typeof TemplateScene>;
 
+const VoiceSpec = z
+  .object({
+    provider: z.literal("omnivoice").default("omnivoice"),
+    speed: z.number().min(0.5).max(2.0).default(1.0),
+    /** Create a voice from attributes, or clone an authorized reference recording. */
+    mode: z.enum(["design", "clone"]).default("design"),
+    /** e.g. "female, young adult, moderate pitch". */
+    instructions: z.string().min(1).optional(),
+    /** OpenAI-style preset supported by the server, e.g. "nova" or "onyx". */
+    voice: z.string().min(1).optional(),
+    numStep: z.number().int().min(1).max(64).optional(),
+    positionTemperature: z.number().min(0).max(10).optional(),
+    classTemperature: z.number().min(0).max(2).optional(),
+    /** Path relative to script.json, or an absolute path, to an authorized sample. */
+    referenceAudio: z.string().min(1).optional(),
+    /** Exact transcript of referenceAudio. */
+    referenceText: z.string().min(1).optional(),
+  })
+  .superRefine((voice, ctx) => {
+    if (voice.mode !== "clone") return;
+    if (!voice.referenceAudio) {
+      ctx.addIssue({ code: "custom", path: ["referenceAudio"], message: "required when voice.mode is clone" });
+    }
+    if (!voice.referenceText) {
+      ctx.addIssue({ code: "custom", path: ["referenceText"], message: "required when voice.mode is clone" });
+    }
+  });
+
 export const TemplateScriptSchema = z.object({
   version: z.literal("1.0"),
   /** Discriminator: marks this as a HyperFrames-template script. */
@@ -41,10 +69,7 @@ export const TemplateScriptSchema = z.object({
     }),
     channel: z.string().min(1),
   }),
-  voice: z.object({
-    provider: z.literal("omnivoice").default("omnivoice"),
-    speed: z.number().min(0.5).max(2.0),
-  }),
+  voice: VoiceSpec,
   /** Output aspect for every scene (templates render a matching composition). */
   aspect: z.enum(["9:16", "16:9", "1:1"]).default("9:16"),
   scenes: z
