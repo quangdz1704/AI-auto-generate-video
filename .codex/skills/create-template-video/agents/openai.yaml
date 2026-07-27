@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Template Video"
+  short_description: "Generate Vietnamese template short videos"
+  default_prompt: "Use $create-template-video to turn this URL or text file into a Vietnamese vertical video."
