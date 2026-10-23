@@ -73,6 +73,27 @@ Từ <b>zero</b> đến <b>hero</b> — đúng cách build agent &amp; tự đ�
 
 ---
 
+<div align="center">
+
+### 📚 Làm chủ Claude Cowork — Tự động hoá công việc hàng ngày
+
+<a href="https://www.udemy.com/course/lam-chu-claude-cowork-tu-ong-hoa-cac-cong-viec-hang-ngay/?referralCode=8F16E4A8C45809E532D3">
+<img src="assets/cowork.jpg" alt="Làm chủ Claude Cowork - Tự động hoá các công việc hàng ngày" width="480" />
+</a>
+
+**Làm chủ Claude Cowork - Tự động hoá các công việc hàng ngày**
+<br/><sub><b>Senior AI Engineer</b> @ AI Coding</sub>
+
+<p><sub>
+Setup &nbsp;·&nbsp; Tổng hợp email &nbsp;·&nbsp; Lên lịch chạy tự động &nbsp;·&nbsp; Xử lý file &nbsp;·&nbsp; Tạo report &nbsp;·&nbsp; Tạo interactive dashboard &nbsp;·&nbsp; Claude in chrome &nbsp;·&nbsp;
+</sub></p>
+
+[![Đăng ký trên Udemy](https://img.shields.io/badge/▶_Đăng_ký_ngay_trên_Udemy-A435F0?style=for-the-badge&logo=udemy&logoColor=white)](https://www.udemy.com/course/lam-chu-claude-cowork-tu-ong-hoa-cac-cong-viec-hang-ngay/?referralCode=8F16E4A8C45809E532D3)
+
+</div>
+
+---
+
 ## 🚀 Bắt đầu nhanh
 
 > 📺 **Hướng dẫn chi tiết:** [Xem video hướng dẫn trên YouTube](https://www.youtube.com/watch?v=V08-8KLmbnA)
@@ -112,6 +133,8 @@ Bạn tự kiểm soát từng scene, từng template.
 </table>
 
 Vài phút sau → `output/<slug>/video.mp4` (1080×1920).
+
+**Chú ý**: Đã bổ sung thư mục `.agent` rồi nên mọi hướng dẫn này không những hoạt động với Claude Code mà còn có thể hoạt động với các Coding Assistant khác vì tất cả ở đây là skill.
 
 ---
 
