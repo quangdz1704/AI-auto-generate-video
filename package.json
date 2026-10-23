@@ -5,14 +5,24 @@
   "main": "src/cli.ts",
   "type": "module",
   "scripts": {
+    "dev": "tsx src/studio/server.ts --dev",
+    "studio": "tsx src/studio/server.ts",
+    "studio:build": "tsc -p tsconfig.web.json && vite build",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "pipeline": "tsx src/cli.ts",
-    "typecheck": "tsc --noEmit",
+    "tts:preview": "tsx src/tts-preview.ts",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.web.json",
     "build": "tsc",
     "sfx:download": "tsx scripts/download-sfx.ts",
-    "sfx:filter": "tsx scripts/filter-sfx.ts"
+    "sfx:filter": "tsx scripts/filter-sfx.ts",
+    "tts:vieneu": "HF_HOME=\"$PWD/.cache/vieneu\" HF_HUB_DISABLE_SYMLINKS=1 VIENEU_BACKEND=onnx HOST=127.0.0.1 PORT=8000 .venv-vieneu/bin/python -m apps.openai_speech",
+    "tts:omnivoice": ".venv-omnivoice/bin/omnivoice-server --host 127.0.0.1 --port 8123 --device cpu --num-step 16",
+    "prelocal:all": "npm run studio:build",
+    "local:all": "concurrently --kill-others --names web,vieneu,omnivoice --prefix-colors cyan,yellow,magenta \"npm:studio\" \"npm:tts:vieneu\" \"npm:tts:omnivoice\"",
+    "local:dev": "concurrently --kill-others --names web,vieneu,omnivoice --prefix-colors cyan,yellow,magenta \"npm:dev\" \"npm:tts:vieneu\" \"npm:tts:omnivoice\"",
+    "local:vieneu": "concurrently --kill-others --names web,vieneu --prefix-colors cyan,yellow \"npm:dev\" \"npm:tts:vieneu\""
   },
   "keywords": [
     "video",
@@ -28,17 +38,34 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.87",
+    "@ai-sdk/google": "^4.0.104",
+    "@ai-sdk/openai": "^4.0.101",
+    "@ai-sdk/openai-compatible": "^3.0.77",
+    "@mozilla/readability": "^0.6.0",
+    "ai": "^7.0.150",
     "axios": "^1.15.2",
     "dotenv": "^17.4.2",
+    "express": "^5.3.0",
+    "linkedom": "^0.18.14",
+    "lucide-react": "^1.61.0",
     "p-limit": "^7.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "@vitest/coverage-v8": "^4.1.5",
+    "concurrently": "^10.0.6",
     "nock": "^14.0.13",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
+    "vite": "^7.3.7",
     "vitest": "^4.1.5"
   }
 }

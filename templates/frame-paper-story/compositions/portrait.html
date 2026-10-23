@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1080,height=1920" />
+    <title>Paper Story · Pencil explainer</title>
+    <link rel="stylesheet" href="../assets/paper-story.css" />
+  </head>
+  <body class="portrait">
+    <main
+      id="root"
+      data-preview-driver="../assets/preview-motion.js"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="8"
+      data-width="1080"
+      data-height="1920"
+      data-composition-variables='{"headline":"Khi hiệu quả trở thành gánh nặng","illustration":"learning","caption":"","brand":"","accent":"#30271e","image":""}'
+    >
+      <img
+        class="sprite-preload"
+        src="../assets/sketch-scenes.png"
+        alt=""
+        aria-hidden="true"
+      />
+      <div class="paper"></div>
+      <h1></h1>
+      <div class="illustration-frame">
+        <div class="illustration"></div>
+        <img class="custom-image" alt="Tranh minh hoạ" />
+        <div class="frame-wash"></div>
+      </div>
+      <div class="caption" aria-label="Phụ đề lời đọc"></div>
+      <div class="brand"></div>
+    </main>
+    <script>
+      (function () {
+        "use strict";
+        var root = document.getElementById("root");
+        var defaults = JSON.parse(
+          root.getAttribute("data-composition-variables"),
+        );
+        var injected =
+          window.__hyperframes && window.__hyperframes.getVariables
+            ? window.__hyperframes.getVariables()
+            : {};
+        var v = Object.assign({}, defaults, injected);
+        var duration = Number(root.dataset.duration) || 8;
+        var narrationSeconds = Math.max(
+          0.1,
+          Math.min(duration, Number(v.narrationSeconds) || duration - 0.4),
+        );
+        var headline = document.querySelector("h1");
+        headline.textContent = String(v.headline || "");
+        if (String(v.headline).length > 80) headline.style.fontSize = "39px";
+        var brand = document.querySelector(".brand");
+        brand.textContent = String(v.brand || "");
+        if (/^#[0-9a-f]{6}$/i.test(v.accent))
+          root.style.setProperty("--accent", v.accent);
+        var art = document.querySelector(".illustration");
+        var image = document.querySelector(".custom-image");
+        var illustration =
+          { learning: "top", overload: "center", balance: "bottom" }[
+            v.illustration
+          ] || "top";
+        art.style.backgroundPosition = "center " + illustration;
+        if (
+          typeof v.image === "string" &&
+          /^data:image\/(png|jpeg|webp);base64,/.test(v.image)
+        ) {
+          image.src = v.image;
+          image.style.display = "block";
+          art.style.display = "none";
+        }
+        var caption = document.querySelector(".caption");
+        var text = String(
+          v.caption ||
+            v.narrationText ||
+            "Bớt chạy theo công việc. Thêm thời gian cho chính mình.",
+        );
+        var words = text.trim().split(/\s+/).filter(Boolean);
+        // Relative timing follows the measured narration length. This is a readable
+        // estimate, not forced alignment or timestamps supplied by the TTS engine.
+        var weights = words.map(function (word) {
+          return (
+            1 +
+            Math.min(word.replace(/[.,!?;:]/g, "").length, 10) * 0.055 +
+            (/[.,!?;:]$/.test(word) ? 0.6 : 0)
+          );
+        });
+        var total = weights.reduce(function (sum, n) {
+          return sum + n;
+        }, 0);
+        var stops = [],
+          sum = 0;
+        weights.forEach(function (n) {
+          sum += n;
+          stops.push(sum / total);
+        });
+        var chunks = [],
+          chunk = [],
+          letters = 0;
+        words.forEach(function (word, index) {
+          if (
+            chunk.length &&
+            (chunk.length >= 7 || letters + word.length > 36)
+          ) {
+            chunks.push(chunk);
+            chunk = [];
+            letters = 0;
+          }
+          chunk.push(index);
+          letters += word.length + 1;
+          if (/[.!?;]$/.test(word)) {
+            chunks.push(chunk);
+            chunk = [];
+            letters = 0;
+          }
+        });
+        if (chunk.length) chunks.push(chunk);
+        var currentChunk = -1,
+          spans = [];
+        function seek(time) {
+          var t = Math.max(0, Math.min(duration, Number(time) || 0));
+          var progress = Math.min(1, t / narrationSeconds);
+          var index = stops.findIndex(function (stop) {
+            return progress < stop;
+          });
+          if (index < 0) index = Math.max(0, words.length - 1);
+          var group = chunks.findIndex(function (indices) {
+            return indices.indexOf(index) >= 0;
+          });
+          if (group !== currentChunk) {
+            caption.replaceChildren();
+            spans = [];
+            (chunks[group] || []).forEach(function (i) {
+              var span = document.createElement("span");
+              span.textContent = words[i];
+              caption.appendChild(span);
+              spans.push({ el: span, index: i });
+            });
+            currentChunk = group;
+          }
+          spans.forEach(function (span) {
+            span.el.className =
+              span.index === index
+                ? "active"
+                : span.index < index
+                  ? "past"
+                  : "";
+          });
+          var transform =
+            "scale(" +
+            (1.012 + (t / duration) * 0.045) +
+            ") translate(" +
+            (-t / duration) * 5 +
+            "px," +
+            (-t / duration) * 3 +
+            "px)";
+          art.style.transform = transform;
+          image.style.transform = transform;
+        }
+        window.__timelines = window.__timelines || {};
+        window.__timelines.main = {
+          seek: seek,
+          duration: function () {
+            return duration;
+          },
+          pause: function () {},
+          paused: function () {
+            return true;
+          },
+        };
+        seek(0);
+        if (window.__STUDIO_PREVIEW) {
+          var driver = document.createElement("script");
+          driver.src = root.dataset.previewDriver;
+          document.body.appendChild(driver);
+        }
+      })();
+    </script>
+  </body>
+</html>

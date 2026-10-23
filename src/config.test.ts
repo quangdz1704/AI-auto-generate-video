@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { loadConfig } from "./config.js";
 
-const ENV_KEYS = ["TTS_PROVIDER", "OMNIVOICE_ENDPOINT", "TTS_CONCURRENCY"];
+const ENV_KEYS = [
+  "TTS_PROVIDER", "OMNIVOICE_ENDPOINT", "TTS_CONCURRENCY",
+  "VIENEU_ENDPOINT", "VIENEU_VOICE", "VIENEU_API_KEY",
+];
 
 describe("loadConfig", () => {
   let saved: Record<string, string | undefined>;
@@ -31,7 +34,35 @@ describe("loadConfig", () => {
     expect(cfg.omnivoiceEndpoint).toBe("http://localhost:9000");
   });
 
-  it("rejects any provider other than omnivoice", () => {
+  it("selects VieNeu from the script when there is no environment override", () => {
+    expect(loadConfig("vieneu").ttsProvider).toBe("vieneu");
+  });
+
+  it("lets TTS_PROVIDER override a script for comparisons", () => {
+    process.env.TTS_PROVIDER = "vieneu";
+    expect(loadConfig("omnivoice").ttsProvider).toBe("vieneu");
+    process.env.TTS_PROVIDER = "omnivoice";
+    expect(loadConfig("vieneu").ttsProvider).toBe("omnivoice");
+  });
+
+  it("defaults VieNeu to a local server with its default voice and no key", () => {
+    const cfg = loadConfig("vieneu");
+    expect(cfg.vieneuEndpoint).toBe("http://127.0.0.1:8000");
+    expect(cfg.vieneuVoice).toBeUndefined();
+    expect(cfg.vieneuApiKey).toBeUndefined();
+  });
+
+  it("respects VieNeu endpoint, voice and optional key", () => {
+    process.env.VIENEU_ENDPOINT = "http://localhost:9001";
+    process.env.VIENEU_VOICE = " Mai Anh ";
+    process.env.VIENEU_API_KEY = "test-key";
+    const cfg = loadConfig("vieneu");
+    expect(cfg.vieneuEndpoint).toBe("http://localhost:9001");
+    expect(cfg.vieneuVoice).toBe("Mai Anh");
+    expect(cfg.vieneuApiKey).toBe("test-key");
+  });
+
+  it("rejects unsupported providers", () => {
     process.env.TTS_PROVIDER = "elevenlabs";
     expect(() => loadConfig()).toThrow(/TTS_PROVIDER/);
   });

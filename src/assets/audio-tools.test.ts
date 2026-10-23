@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdtempSync, rmSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { getDurationSec, concatWithSilence } from "./audio-tools.js";
+import { getDurationSec, concatWithSilence, mixBackgroundMusic } from "./audio-tools.js";
 
 let tmp: string;
 beforeEach(() => { tmp = mkdtempSync(join(tmpdir(), "aud-")); });
@@ -29,5 +29,19 @@ describe("concatWithSilence", () => {
     // 2s + 0.3s + 3s = 5.3s, allow ±0.3s
     expect(d).toBeGreaterThan(5.0);
     expect(d).toBeLessThan(5.6);
+  });
+});
+
+describe("mixBackgroundMusic", () => {
+  it("keeps narration duration when the music is longer", async () => {
+    const out = join(tmp, "music-mix.mp3");
+    await mixBackgroundMusic("tests/fixtures/sample-audio-1.mp3", "tests/fixtures/sample-audio-2.mp3", 0.12, out);
+    const duration = await getDurationSec(out);
+    expect(duration).toBeGreaterThan(1.9);
+    expect(duration).toBeLessThan(2.3);
+  });
+
+  it("rejects invalid volume before running FFmpeg", async () => {
+    await expect(mixBackgroundMusic("voice.mp3", "music.mp3", NaN, "out.mp3")).rejects.toThrow(/volume/);
   });
 });

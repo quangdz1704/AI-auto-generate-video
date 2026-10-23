@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1080,height=1920" />
+    <title>Photo Story</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
+      #root {
+        width: 1080px;
+        height: 1920px;
+        background: #151a14;
+        position: relative;
+        color: #fff;
+        overflow: hidden;
+      }
+      .photo {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.85;
+      }
+      .wash {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          0deg,
+          #10140ff5 0%,
+          #10140f85 48%,
+          #10140f10 75%
+        );
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 80% 15%,
+          #b5ed7d35,
+          transparent 60%
+        );
+      }
+      .top {
+        position: absolute;
+        top: 95px;
+        left: 80px;
+        right: 80px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 25px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+      }
+      .badge {
+        color: #b4ed7d;
+      }
+      .copy {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        bottom: 195px;
+      }
+      .rule {
+        width: 100px;
+        height: 8px;
+        background: #b4ed7d;
+        margin-bottom: 50px;
+      }
+      h1 {
+        font-size: 110px;
+        line-height: 1.04;
+        letter-spacing: -5px;
+        overflow-wrap: anywhere;
+        font-weight: 800;
+      }
+      p {
+        font-size: 38px;
+        line-height: 1.5;
+        color: #dbe1d8;
+        margin-top: 35px;
+      }
+      .bottom {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        bottom: 65px;
+        border-top: 1px solid #ffffff40;
+        padding-top: 30px;
+        color: #ffffffa0;
+        font-size: 23px;
+        letter-spacing: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5"
+      data-width="1080"
+      data-height="1920"
+      data-composition-variables='{"kicker":"CÂU CHUYỆN HÔM NAY","headline":"Mỗi hình ảnh. Một câu chuyện.","subtitle":"Thêm hình ảnh của bạn để bắt đầu.","brand":"MY STUDIO","image":""}'
+    >
+      <img class="photo" alt="" />
+      <div class="grain"></div>
+      <div class="wash"></div>
+      <div class="top">
+        <span class="brand"></span><span class="badge">STORY / 01</span>
+      </div>
+      <div class="copy">
+        <div class="rule"></div>
+        <h1></h1>
+        <p></p>
+      </div>
+      <div class="bottom"></div>
+    </div>
+    <script>
+      (function () {
+        var v =
+          window.__hyperframes && window.__hyperframes.getVariables
+            ? window.__hyperframes.getVariables()
+            : {};
+        function set(s, t) {
+          document.querySelector(s).textContent = t || "";
+        }
+        set("h1", v.headline);
+        set("p", v.subtitle);
+        set(".brand", v.brand);
+        set(".bottom", v.kicker);
+        var img = document.querySelector(".photo");
+        if (v.image && /^data:image\/(png|jpeg|webp);base64,/.test(v.image))
+          img.src = v.image;
+        else img.style.display = "none";
+        window.__timelines = {
+          main: {
+            pause: function () {},
+            paused: function () {
+              return true;
+            },
+            seek: function (t) {
+              img.style.transform = "scale(" + (1 + t * 0.012) + ")";
+            },
+          },
+        };
+      })();
+    </script>
+  </body>
+</html>

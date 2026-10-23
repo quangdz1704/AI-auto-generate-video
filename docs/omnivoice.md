@@ -4,16 +4,27 @@ The pipeline uses an OpenAI-compatible OmniVoice server at
 `http://127.0.0.1:8123`. Its scene audio is WAV; FFmpeg produces the final
 `voice.mp3` and `video.mp4`.
 
+## First-time installation (macOS/Linux)
+
+Run from the project root, with `uv` installed:
+
+```bash
+uv venv .venv-omnivoice --python python3.13
+uv pip install --python .venv-omnivoice/bin/python "omnivoice-server==0.2.4"
+```
+
+The first start downloads model weights into the Hugging Face cache.
+On the current machine this environment and model cache already exist.
+
 ## Start the server
 
 The project keeps an isolated Python environment at `.venv-omnivoice/`:
 
 ```bash
-source .venv-omnivoice/bin/activate
-omnivoice-server --host 127.0.0.1 --port 8123 --device cpu --num-step 16
+npm run tts:omnivoice
 ```
 
-Use `--num-step 32` when prioritizing quality over speed. Keep `127.0.0.1`
+Use the underlying `.venv-omnivoice/bin/omnivoice-server` command with `--num-step 32` when prioritizing quality over speed. Keep `127.0.0.1`
 unless you deliberately need other machines on the network to reach the TTS
 server.
 

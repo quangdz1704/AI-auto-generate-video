@@ -223,6 +223,28 @@ Each side (`left` / `right`) object:
 
 ---
 
+## frame-paper-story
+
+**Role:** hook / body / outro, illustrated explainer. Warm cream paper, persistent
+headline, pencil storyboard in a landscape frame, slow camera push, and caption
+groups with word emphasis. Inspired by the layout of a Vietnamese explainer Short.
+
+| slot | type | notes |
+| --- | --- | --- |
+| `headline` | string | <=80 characters; keep the same across scenes for a persistent title |
+| `illustration` | string | `learning`, `overload`, or `balance` (three original bundled illustrations) |
+| `caption` | string | Optional; blank uses scene `voiceText` automatically |
+| `brand` | string | Optional small footer, blank by default |
+| `accent` | hex string | Active word color, default `#30271e` |
+| `image` | string | Optional PNG/JPEG/WebP data URI, replaces the bundled illustration |
+
+Caption timing is estimated from the measured narration length, not exact word
+alignment. This template renders for the complete narration duration instead of
+freezing at the end of a fixed poster animation. 9:16, 16:9 and 1:1 supported.
+See [template guide](frame-paper-story/README.md).
+
+---
+
 ## Adding a template
 
 Drop a folder `templates/<id>/` with `index.html` (16:9 root, `data-composition-id`),

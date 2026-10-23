@@ -160,6 +160,16 @@ export interface SfxMixSpec {
   volume: number;
 }
 
+/** Loop a music bed under the narration; narration controls the final duration. */
+export async function mixBackgroundMusic(voice: string, music: string, volume: number, out: string) {
+  if (!Number.isFinite(volume) || volume < 0 || volume > 0.5) throw new Error("Music volume must be between 0 and 0.5");
+  await run("ffmpeg", [
+    "-y", "-i", voice, "-stream_loop", "-1", "-i", music,
+    "-filter_complex", `[1:a]volume=${volume}[music];[0:a][music]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[out]`,
+    "-map", "[out]", "-c:a", "libmp3lame", "-b:a", "192k", "-ar", "44100", out,
+  ]);
+}
+
 /**
  * Mix SFX layer onto an existing voice mp3.
  *

@@ -30,13 +30,13 @@ export type TemplateSceneType = z.infer<typeof TemplateScene>;
 
 const VoiceSpec = z
   .object({
-    provider: z.literal("omnivoice").default("omnivoice"),
+    provider: z.enum(["omnivoice", "vieneu"]).default("omnivoice"),
     speed: z.number().min(0.5).max(2.0).default(1.0),
     /** Create a voice from attributes, or clone an authorized reference recording. */
     mode: z.enum(["design", "clone"]).default("design"),
     /** e.g. "female, young adult, moderate pitch". */
     instructions: z.string().min(1).optional(),
-    /** OpenAI-style preset supported by the server, e.g. "nova" or "onyx". */
+    /** Provider-specific preset, e.g. OmniVoice's "nova" or a VieNeu /v1/voices ID. */
     voice: z.string().min(1).optional(),
     numStep: z.number().int().min(1).max(64).optional(),
     positionTemperature: z.number().min(0).max(10).optional(),

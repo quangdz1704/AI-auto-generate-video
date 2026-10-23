@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "renderer": "hyperframes",
+  "aspect": "9:16",
+  "metadata": {
+    "title": "Làm ít hơn, sống nhiều hơn",
+    "channel": "Frame Studio",
+    "source": {
+      "url": "",
+      "domain": "local",
+      "image": null
+    }
+  },
+  "voice": {
+    "provider": "vieneu",
+    "mode": "design",
+    "speed": 1,
+    "voice": "Mai Anh"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "voiceText": "Bạn có từng làm việc cả ngày, nhưng tối đến vẫn cảm thấy mình chưa làm được điều quan trọng nhất?",
+      "templateId": "frame-paper-story",
+      "inputs": {
+        "headline": "Làm ít hơn, sống nhiều hơn",
+        "illustration": "learning",
+        "caption": "",
+        "brand": "",
+        "accent": "#30271e",
+        "image": ""
+      },
+      "sfx": {
+        "name": "none",
+        "volume": 0,
+        "startOffsetSec": 0
+      }
+    },
+    {
+      "id": "body-1",
+      "type": "body",
+      "voiceText": "Khi cố gắng nhận mọi việc, thời gian dành cho điều quan trọng lại ít đi. Làm nhanh hơn không có nghĩa là nên nhận thêm mãi.",
+      "templateId": "frame-paper-story",
+      "inputs": {
+        "headline": "Làm ít hơn, sống nhiều hơn",
+        "illustration": "overload",
+        "caption": "",
+        "brand": "",
+        "accent": "#30271e",
+        "image": ""
+      },
+      "sfx": {
+        "name": "none",
+        "volume": 0,
+        "startOffsetSec": 0
+      }
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "voiceText": "Hãy chọn một việc đáng làm, hoàn thành thật tốt, rồi dành thời gian nghỉ ngơi. Hiệu quả nên giúp cuộc sống nhẹ hơn.",
+      "templateId": "frame-paper-story",
+      "inputs": {
+        "headline": "Làm ít hơn, sống nhiều hơn",
+        "illustration": "balance",
+        "caption": "",
+        "brand": "",
+        "accent": "#30271e",
+        "image": ""
+      },
+      "sfx": {
+        "name": "none",
+        "volume": 0,
+        "startOffsetSec": 0
+      }
+    }
+  ]
+}

@@ -96,6 +96,20 @@ Setup &nbsp;·&nbsp; Tổng hợp email &nbsp;·&nbsp; Lên lịch chạy tự �
 
 ## 🚀 Quick Start
 
+**Internal web app — Frame Studio:**
+
+```bash
+npm install
+npm run local:all
+```
+
+Open **http://127.0.0.1:4310** to select a local CLI agent or API key, prepare
+and edit scenes, choose templates/voices/images/music, follow render progress,
+and preview/download the result. Settings persist on the host machine.
+`local:all` starts web + VieNeu + OmniVoice; `local:dev` enables HMR, and
+`local:vieneu` starts web + VieNeu only. Ctrl+C stops the group. Install the
+Python TTS environments first on a new machine. See [the Studio guide](docs/studio.md).
+
 > 📺 **Detailed guide:** [Watch the video walkthrough on YouTube](https://www.youtube.com/watch?v=V08-8KLmbnA)
 
 ```bash
@@ -211,7 +225,9 @@ Eight deterministic steps in [`src/render/template-pipeline.ts`](src/render/temp
 
 <br/>
 
-OmniVoice is the only TTS provider, and it's local — **no API keys.**
+OmniVoice is the default local provider. **VieNeu-TTS v3 Turbo** is also
+available with `TTS_PROVIDER=vieneu`. See [docs/vieneu.md](docs/vieneu.md)
+for local server setup, voice selection, and video generation.
 
 ```env
 TTS_PROVIDER=omnivoice
@@ -222,6 +238,21 @@ TTS_CONCURRENCY=1
 See the [local OmniVoice guide](docs/omnivoice.md) for server setup and voice
 design/cloning. The pipeline calls OpenAI-compatible `POST /v1/audio/speech`;
 scene audio is WAV and FFmpeg produces the final `voice.mp3`.
+
+Preview VieNeu after starting its local server (port `8000` by default):
+
+```bash
+TTS_PROVIDER=vieneu npm run tts:preview
+```
+
+Audio is saved to `output/tts-preview/vieneu.wav`. Select it for a video:
+
+```bash
+TTS_PROVIDER=vieneu npm run pipeline -- output/my-video/script.json
+```
+
+`TTS_PROVIDER` overrides `voice.provider` in the script. VieNeu's scene cache
+is separate; use two output folders to keep both complete videos for comparison.
 
 </details>
 

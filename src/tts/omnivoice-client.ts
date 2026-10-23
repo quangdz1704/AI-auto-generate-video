@@ -30,9 +30,10 @@ export class OmniVoiceClient implements TtsClient {
 
     for (let attempt = 0; attempt < 4; attempt++) {
       try {
-        const resp = options.mode === "clone"
-          ? await this.clone(text, options)
-          : await this.design(text, options);
+        const resp =
+          options.mode === "clone"
+            ? await this.clone(text, options)
+            : await this.design(text, options);
         await writeFile(audioOutPath, Buffer.from(resp.data));
         return;
       } catch (e) {
@@ -82,6 +83,15 @@ export class OmniVoiceClient implements TtsClient {
     const form = new FormData();
     form.append("text", text);
     form.append("ref_text", options.referenceText);
+    form.append("response_format", "wav");
+    for (const [name, value] of Object.entries({
+      speed: options.speed,
+      num_step: options.numStep,
+      position_temperature: options.positionTemperature,
+      class_temperature: options.classTemperature,
+    })) {
+      if (value !== undefined) form.append(name, String(value));
+    }
     const audio = await readFile(options.referenceAudioPath);
     form.append(
       "ref_audio",

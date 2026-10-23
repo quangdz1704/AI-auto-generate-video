@@ -1,6 +1,5 @@
 /**
- * Common TTS client interface. OmniVoice is the only provider; the interface
- * is kept so the pipeline orchestration stays decoupled from the implementation.
+ * Common TTS client interface for the local OmniVoice and VieNeu servers.
  */
 export interface TtsClient {
   /**
@@ -13,7 +12,7 @@ export interface TtsClient {
   ): Promise<void>;
 }
 
-/** Per-video voice settings understood by the local OmniVoice server. */
+/** Per-video voice settings; VieNeu supports presets and reference cloning, not voice design. */
 export interface TtsGenerateOptions {
   /** `design` generates from attributes; `clone` uses an authorized recording. */
   mode?: "design" | "clone";
@@ -36,7 +35,15 @@ export interface TtsGenerateOptions {
 
 import type { Config } from "../config.js";
 import { OmniVoiceClient } from "./omnivoice-client.js";
+import { VieNeuClient } from "./vieneu-client.js";
 
 export function createTtsClient(cfg: Config): TtsClient {
+  if (cfg.ttsProvider === "vieneu") {
+    return new VieNeuClient({
+      endpoint: cfg.vieneuEndpoint,
+      voice: cfg.vieneuVoice,
+      apiKey: cfg.vieneuApiKey,
+    });
+  }
   return new OmniVoiceClient({ endpoint: cfg.omnivoiceEndpoint });
 }

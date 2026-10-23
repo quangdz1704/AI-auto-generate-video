@@ -96,6 +96,20 @@ Setup &nbsp;·&nbsp; Tổng hợp email &nbsp;·&nbsp; Lên lịch chạy tự �
 
 ## 🚀 Bắt đầu nhanh
 
+**Web app nội bộ — Frame Studio:**
+
+```bash
+npm install
+npm run local:all
+```
+
+Mở **http://127.0.0.1:4310** để chọn CLI agent/API key, tạo và chỉnh kịch bản,
+chọn template/giọng đọc/hình ảnh/nhạc, theo dõi render và xem video hoàn chỉnh.
+Cấu hình được nhớ trên máy. `local:all` bật web + VieNeu + OmniVoice;
+`local:dev` dùng HMR, `local:vieneu` chỉ bật web + VieNeu. Nhấn Ctrl+C để dừng cả nhóm.
+Cần cài hai môi trường Python TTS trước khi chạy trên máy mới.
+Xem [hướng dẫn Studio](docs/studio.md) để cấu hình và chạy bản build.
+
 > 📺 **Hướng dẫn chi tiết:** [Xem video hướng dẫn trên YouTube](https://www.youtube.com/watch?v=V08-8KLmbnA)
 
 ```bash
@@ -211,7 +225,9 @@ Pipeline chạy 8 bước, lần nào cũng như lần nấy — code ở [`src/
 
 <br/>
 
-Ở đây chỉ có mỗi OmniVoice, lại chạy ngay trên máy nên **chẳng cần API key gì cả.**
+Mặc định dùng OmniVoice local. Có thể chọn **VieNeu-TTS v3 Turbo** qua
+`TTS_PROVIDER=vieneu`; hướng dẫn cài server, chọn giọng và chạy video ở
+[docs/vieneu.md](docs/vieneu.md).
 
 ```env
 TTS_PROVIDER=omnivoice
@@ -222,6 +238,21 @@ TTS_CONCURRENCY=1
 Xem [hướng dẫn chạy OmniVoice và chọn/design/clone giọng](docs/omnivoice.md).
 Pipeline dùng API OpenAI-compatible `POST /v1/audio/speech`; server trả WAV cho
 từng scene, sau đó FFmpeg tạo `voice.mp3` cuối cùng.
+
+Nghe thử VieNeu sau khi bật server local (mặc định cổng `8000`):
+
+```bash
+TTS_PROVIDER=vieneu npm run tts:preview
+```
+
+Audio ở `output/tts-preview/vieneu.wav`. Chọn provider cho một lần render:
+
+```bash
+TTS_PROVIDER=vieneu npm run pipeline -- output/my-video/script.json
+```
+
+`TTS_PROVIDER` ưu tiên hơn `voice.provider` trong script. Cache VieNeu được
+tách riêng; muốn giữ cả hai video so sánh, dùng hai thư mục output khác nhau.
 
 </details>
 
